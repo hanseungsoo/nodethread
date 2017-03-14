@@ -2,12 +2,12 @@ var net = require('net');
 
 let encoding = 'utf8';
 let timeout = 2000;
-let port = 4444;
+let port = 8888;
 //let host = '127.0.0.1';
-let host = '192.168.56.101';
+let host = '192.168.0.8';
 let dev = false;
 
-module.exports.getConnection = function(connName, callName) {
+module.exports.getConnection = function(connName, callback) {
   var client = net.connect({port: port, host: host}, function() {
     if(dev){
       console.log(connName + ' Connected: ');
@@ -39,28 +39,24 @@ module.exports.getConnection = function(connName, callName) {
         console.log('Socket Closed');
       //call(null, callName);
     });
+
+    let client_json = {};
+    client_json.client = client;
+    client_json.Name = connName;
+    callback(client_json);
   });
-  return client;
+
 };
 
-module.exports.writeData = function (socket, startTime,data, callback){
+module.exports.writeData = function (client_json, data, callback){
 
-  var success = !socket.write(data, function(){
+  var success = !client_json.client.write(data, function(){
     if(dev)
       console.log('write closed!!!!!');
-    let finishTime = new Date().getTime();
-    let temp = finishTime - startTime;
-    // console.log('# startTime : '+startTime +'\n# finishTime : ' + finishTime );
-//    console.log('# - Send Finish : ' + temp.toString() + 'ms');
-    socket.end();
-    callback(null);
-  });
-  if (!success){
-    (function(socket, data){
-      socket.once('drain', function(){
-        writeData(socket, data);
-      });
-    })(socket, data);
 
-  }
+    client_json.client.end();
+
+    callback(new Date().getTime());
+  });
+
 };

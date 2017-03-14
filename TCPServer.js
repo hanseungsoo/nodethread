@@ -12,20 +12,22 @@ var server = net.createServer(function(client) {
   client.setTimeout(timeout);
   client.setEncoding(encoding);
   client.on('data', function(data) {
-    if(dev){
       console.log('Received data from client on port %d: %s',
                   client.remotePort, data.toString());
       console.log('  Bytes received: ' + client.bytesRead);
     // writeData(client,data.toString());
       console.log('  Bytes sent: ' + client.bytesWritten);
-    }
+
     //writeData(client,data.toString());
   });
   client.on('end', function() {
     console.log('Client disconnected');
-    server.getConnections(function(err, count){
-      console.log('Remaining Connections: ' + count);
-    });
+    if(dev){
+      server.getConnections(function(err, count){
+        console.log('Remaining Connections: ' + count);
+      });
+    }
+    
   });
   client.on('error', function(err) {
     console.log('Socket Error: ', JSON.stringify(err));
@@ -34,7 +36,10 @@ var server = net.createServer(function(client) {
     console.log('Socket Timed out');
   });
 });
-server.listen(8888, function() {
+server.listen({
+    port: 8888,
+    backlog: 10000
+}, function() {
   console.log('Server listening: ' + JSON.stringify(server.address()));
   server.on('close', function(){
     console.log('Server Terminated');
