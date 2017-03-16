@@ -21,13 +21,14 @@ var server = net.createServer(function(client) {
     //writeData(client,data.toString());
   });
   client.on('end', function() {
-    console.log('Client disconnected');
+    
     if(dev){
+      console.log('Client disconnected');
       server.getConnections(function(err, count){
         console.log('Remaining Connections: ' + count);
       });
     }
-    
+
   });
   client.on('error', function(err) {
     console.log('Socket Error: ', JSON.stringify(err));

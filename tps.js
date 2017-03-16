@@ -3,21 +3,26 @@ let myTCP =  require('./TCPClient.js');
 
 let str_data = "aaaaaaaaaabbbbbbbbbbccccccccccdddddddddd";
 
-let temp = 0;
-let startTime = new Date().getTime();
-let endTime = 0;
 let duration = 1;
+let functions = [];
+let sessionCount = 0;
 //((endTime - startTime)/1000) < duration
 
-while(((endTime - startTime)/500) < duration){
-  myTCP.getConnection(temp, function(client_json){
-    myTCP.writeData(client_json, str_data, function(endDate){
-      console.log(endDate);
+let FConnection = function(sessionCount){
+  myTCP.getConnection('0', function(client_json){
+    myTCP.writeData(client_json, str_data, function(endTime){
+      console.log((endTime - startTime)/1000);
+      if(((endTime - startTime)/1000) < duration){
 
+        sessionCount = sessionCount + 1;
+        FConnection(sessionCount);
+      }else{
+        console.log(sessionCount);
+      }
     });
   });
-  endTime = new Date().getTime();
-  console.log((endTime - startTime)/1000);
 }
 
-console.log('FIN');
+let startTime = new Date().getTime();
+
+FConnection(sessionCount);

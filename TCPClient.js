@@ -1,7 +1,7 @@
 var net = require('net');
 
 let encoding = 'utf8';
-let timeout = 2000;
+let timeout = 5000;
 let port = 8888;
 //let host = '127.0.0.1';
 let host = '192.168.0.8';
@@ -9,13 +9,14 @@ let dev = false;
 
 module.exports.getConnection = function(connName, callback) {
   var client = net.connect({port: port, host: host}, function() {
-    if(dev){
-      console.log(connName + ' Connected: ');
+
+      console.log('Connect Complete');
 //    console.log('   local = %s:%s', this.localAddress, this.localPort);\
 //    console.log('   remote = %s:%s', this.remoteAddress, this.remotePort);
-}
+
     this.setTimeout(timeout);
     this.setEncoding(encoding);
+
     this.on('data', function(data) {
       if(dev)
         console.log(connName + " From Server: " + data.toString());
